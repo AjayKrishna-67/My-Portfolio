@@ -1,1 +1,59 @@
 @import "tailwindcss";
+
+@keyframes shine {
+  0% {
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  }
+  25% {
+    color: #60a5fa;
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.8);
+  }
+  50% {
+    color: #34d399;
+    text-shadow: 0 0 15px rgba(52, 211, 153, 0.8);
+  }
+  75% {
+    color: #f87171;
+    text-shadow: 0 0 10px rgba(248, 113, 113, 0.8);
+  }
+  100% {
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  }
+}
+
+.animate-shine {
+  animation: shine 4s linear infinite;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-slide {
+  animation: slide 20s linear infinite;
+}
+
+@keyframes scaleInOut {
+    0% {
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+    50% {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+    100% {
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+  }
+  .animate-scale-in-out {
+    animation: scaleInOut 5s ease-in-out infinite;
+  }

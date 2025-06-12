@@ -21,11 +21,11 @@ function Landing() {
       setCurrentWelcomeIndex((prevIndex) => 
         (prevIndex + 1) % welcomes.length
       );
-    }, 300);
+    }, 500);
 
     const navigationTimer = setTimeout(() => {
       navigate('/__Ajay_Krishna__');
-    }, 2000);
+    }, 3000);
 
     return () => {
       clearInterval(cycleInterval);
