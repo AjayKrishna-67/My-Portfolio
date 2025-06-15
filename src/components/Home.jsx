@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Ajay from '../assets/AJAY.jpg';
-import Nevbar from './Nevbar';
 
 function Home() {
   useEffect(() => {
@@ -11,9 +10,6 @@ function Home() {
 
   return (
     <>
-    <div>
-      <Nevbar/>
-    </div>
     <section className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center py-12 px-4">
       <div className="max-w-3xl mx-auto text-center" data-aos="fade-up">
         <img

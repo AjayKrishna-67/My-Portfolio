@@ -1,18 +1,20 @@
-import React from 'react'
-import Home from './Home'
-import About from './About'
-import Projects from './Projects'
+import React from 'react';
+import Home from './Home';
+import About from './About';
+import Projects from './Projects';
 import Contact from './Contact';
+import Nevbar from './Nevbar';
 
 function Portfolio() {
   return (
     <div>
-      <Home/>
-      <About/>
-      <Projects/>
-      <Contact/>
+      <Nevbar />
+      <div id="home"><Home /></div>
+      <div id="about" ><About /></div>
+      <div id="projects"><Projects /></div>
+      <div id="contact"><Contact /></div>
     </div>
-  )
+  );
 }
 
-export default Portfolio
+export default Portfolio;

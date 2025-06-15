@@ -59,7 +59,7 @@ function About() {
     <>
       <div className="min-h-screen bg-gray-800 flex flex-col justify-center p-5">
         <div className="text-white text-center">
-          <h2 className="text-5xl text-white font-bold text-center relative inline-block mb-5">
+          <h2 className="text-5xl text-white font-extrabold text-center relative inline-block mb-5">
             About
             <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#B8CFCE] animate-scale-in-out"></span>
           </h2>

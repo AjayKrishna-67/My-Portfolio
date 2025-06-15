@@ -9,7 +9,7 @@ function Projects() {
     <div className='bg-gray-800 min-h-screen'>
       <div>
         <div className='text-center'>
-        <h2 className='text-5xl text-white font-bold text-center relative inline-block'>
+        <h2 className='text-5xl text-white font-extrabold text-center relative inline-block'>
           Projects
            <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#B8CFCE] animate-scale-in-out"></span>
         </h2>
