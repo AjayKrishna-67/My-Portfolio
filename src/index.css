@@ -1,68 +1,117 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque/standard.css";
+@import "@fontsource-variable/instrument-sans/wdth.css";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* Dark mode follows the `dark` class on <html>, which the lamp toggles. */
+@custom-variant dark (&:where(.dark, .dark *));
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+@theme {
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Station-nameboard yellow. Used only as a fill behind near-black text. */
+  --color-signal: #ffd100;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color-scheme: light;
   }
-  a:hover {
-    color: #747bff;
+
+  :root.dark {
+    color-scheme: dark;
   }
-  button {
-    background-color: #f9f9f9;
+
+  /* The lamp's glow reaches past the right edge; clip it without a scrollbar.
+     (`clip`, not `hidden`, so sticky sections keep working.) */
+  html {
+    overflow-x: clip;
   }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    @apply bg-neutral-50 text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100;
+  }
+
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+}
+
+/* Headline voice: Bricolage Grotesque, heavy and tightly set. Its optical
+   size axis follows the font size, so big type gets the sharper cut. */
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+}
+
+/* The poster name: the same face at its narrowest and heaviest. */
+@utility giant {
+  font-family: var(--font-display);
+  font-stretch: 75%;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.8;
+}
+
+/* Sunset gradient that drifts slowly through the letters. */
+@utility sunset-text {
+  background-image: linear-gradient(
+    100deg,
+    #ffd100 0%,
+    #ff8a00 25%,
+    #ff3d81 50%,
+    #ff8a00 75%,
+    #ffd100 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  color: transparent;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: sunset-pan 9s linear infinite;
+  }
+}
+
+@utility sunset-fill {
+  background-image: linear-gradient(100deg, #ffd100, #ff8a00 45%, #ff3d81);
+}
+
+@keyframes sunset-pan {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Text link: underlined at rest, filled with signal yellow on hover. */
+@utility link-fill {
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    text-decoration-color 150ms ease;
+
+  &:hover {
+    background-color: var(--color-signal);
+    color: var(--color-neutral-950);
+    text-decoration-color: transparent;
+  }
+}
+
+/* The lamp reveals the new theme as a circle growing from the bulb,
+   so the default cross-fade is switched off. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }

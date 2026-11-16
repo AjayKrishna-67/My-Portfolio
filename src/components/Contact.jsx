@@ -1,115 +1,226 @@
-import React, { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
+import Portrait from './Portrait';
+
+export const GITHUB_URL = 'https://github.com/AjayKrishna-67';
+
+export const LINKEDIN_URL =
+  'https://www.linkedin.com/in/ajay-krishna-d-96043226a/';
+
+// One form field: a bordered box with its label floating inside it. The
+// label sits where the text goes until the field is focused or filled, then
+// moves into a strip at the top of the box that the text never scrolls into.
+// Once someone has left a field (or tried to send), an invalid value turns the
+// border red, marks the field invalid and shows a hint under it.
+function Field({ id, label, hint, multiline = false, className = '', ...props }) {
+  const Tag = multiline ? 'textarea' : 'input';
+  const control = useRef(null);
+  const [touched, setTouched] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const check = (el) => setInvalid(!el.validity.valid);
+
+  return (
+    <div className={className}>
+      <div
+        onClick={() => control.current?.focus()}
+        data-invalid={invalid || undefined}
+        className="relative cursor-text rounded-xl border border-neutral-400 bg-white pt-7 shadow-sm transition-[border-color,box-shadow] duration-150 hover:border-neutral-500 focus-within:border-neutral-900 focus-within:ring-4 focus-within:ring-signal/45 has-[:disabled]:opacity-60 data-invalid:border-rose-600 data-invalid:hover:border-rose-600 data-invalid:focus-within:border-rose-600 data-invalid:focus-within:ring-rose-500/20 dark:border-neutral-600 dark:bg-neutral-950 dark:hover:border-neutral-400 dark:focus-within:border-neutral-200 dark:focus-within:ring-signal/30 dark:data-invalid:border-rose-400 dark:data-invalid:hover:border-rose-400 dark:data-invalid:focus-within:border-rose-400"
+      >
+        <Tag
+          ref={control}
+          id={id}
+          placeholder=" "
+          aria-invalid={invalid || undefined}
+          aria-describedby={invalid ? `${id}-hint` : undefined}
+          onBlur={(e) => {
+            if (e.target.value || touched) check(e.target);
+            setTouched(true);
+          }}
+          onInput={(e) => {
+            if (touched) check(e.target);
+          }}
+          onInvalid={() => {
+            setTouched(true);
+            setInvalid(true);
+          }}
+          className={`peer block w-full bg-transparent px-4 pb-2.5 text-lg text-neutral-900 outline-none dark:text-neutral-100 ${
+            multiline ? 'min-h-36 resize-y' : ''
+          }`}
+          {...props}
+        />
+        <label
+          htmlFor={id}
+          className="absolute top-2.5 left-4 cursor-text text-sm font-semibold text-neutral-600 transition-all duration-150 peer-placeholder-shown:top-[1.15rem] peer-placeholder-shown:text-lg peer-placeholder-shown:font-normal peer-placeholder-shown:text-neutral-500 peer-focus:top-2.5 peer-focus:text-sm peer-focus:font-semibold peer-focus:text-neutral-900 dark:text-neutral-400 dark:peer-placeholder-shown:text-neutral-400 dark:peer-focus:text-neutral-100"
+        >
+          {label}
+        </label>
+      </div>
+      {invalid && (
+        <p id={`${id}-hint`} className="mt-1.5 text-sm text-rose-700 dark:text-rose-400">
+          {hint}
+        </p>
+      )}
+    </div>
+  );
+}
 
 function Contact() {
-  const form = useRef();
-  const [formData, setFormData] = useState({
-    user_name: '',
-    user_email: '',
-    message: '',
-    title: '' 
-  });
-  const [status, setStatus] = useState('');
+  const form = useRef(null);
+  // 'idle' | 'sending' | 'sent' | 'failed'
+  const [status, setStatus] = useState('idle');
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const sendEmail = (event) => {
+    event.preventDefault();
+    if (status === 'sending') return;
+    const el = form.current;
+    // Our own hints replace the browser's bubbles (the form is noValidate):
+    // checkValidity marks each empty or wrong field, then focus the first.
+    if (!el.checkValidity()) {
+      el.querySelector('input:invalid, textarea:invalid')?.focus();
+      return;
+    }
+    // When it was sent, in India time, for the {{time}} line in the email.
+    el.elements.time.value = new Date().toLocaleString('en-IN', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: 'Asia/Kolkata',
+    });
+    // sendForm reads the fields right away, before the fieldset is disabled.
+    const sending = emailjs.sendForm(
+      'service_i2fcp7l',
+      'template_vt0ifp8',
+      el,
+      'GPLTnskmZk-yw7y2M',
+    );
+    setStatus('sending');
+    sending.then(
+      () => {
+        el.reset();
+        setStatus('sent');
+      },
+      (error) => {
+        console.error('EmailJS:', error?.text ?? error);
+        setStatus('failed');
+      },
+    );
   };
 
-  const sendEmail = (e) => {
-    e.preventDefault();
-    console.log('Form data:', formData);
-    emailjs
-      .sendForm('service_o7cc5vj', 'template_vt0ifp8', form.current, 'GPLTnskmZk-yw7y2M')
-      .then(
-        (result) => {
-          console.log('Success:', result.text);
-          setStatus('Message sent successfully!');
-          setFormData({ user_name: '', user_email: '', message: '', title: '' });
-        },
-        (error) => {
-          console.error('Error:', error.text);
-          setStatus(`Error: ${error.text}`);
-        }
-      );
+  // Editing the form again clears an old "sent" or "not sent" message.
+  const clearStatus = () => {
+    if (status === 'sent' || status === 'failed') setStatus('idle');
   };
 
   return (
-    <div className="min-h-screen bg-gray-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full p-8 text-center">
-         <h2 className="text-5xl font-extrabold relative inline-block text-white">Contact
-          <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#B8CFCE] animate-scale-in-out"></span>
-        </h2>
-        <form ref={form} onSubmit={sendEmail} className="mt-8 space-y-6">
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="user_name" className="sr-only">Name</label>
-              <input
-                id="user_name"
-                name="user_name"
-                type="text"
-                required
-                className="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300  text-white focus:outline-none focus:ring-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Name"
-                value={formData.user_name}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="user_email" className="sr-only">Email address</label>
-              <input
-                id="user_email"
-                name="user_email"
-                type="email"
-                required
-                className="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300  text-white focus:outline-none focus:ring-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
-                value={formData.user_email}
-                onChange={handleChange}
-              />
-            </div>
-             <div>
-              <label htmlFor="title" className="sr-only">Subject</label>
-              <input
-                id="title"
-                name="title"
-                type="text"
-                required
-                className="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300  text-white focus:outline-none focus:ring-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Subject"
-                value={formData.title}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="message" className="sr-only">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                required
-                className="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300  text-white focus:outline-none focus:ring-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Your message"
-                rows="4"
-                value={formData.message}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div>
-            <button
-              className="mt-2 font-bold text-xl w-[30%] relative group cursor-pointer inline-block z-10"
+    <section
+      id="contact"
+      className="border-t border-neutral-200 dark:border-neutral-800"
+    >
+      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-12 lg:gap-10 lg:py-32">
+        <div className="lg:col-span-5">
+          <h2 className="display text-5xl sm:text-6xl">Contact</h2>
+          <p className="mt-6 max-w-[40ch] text-xl text-neutral-600 dark:text-neutral-400">
+            Have a role or a project in mind? Send a message and it goes
+            straight to my inbox. You can also{' '}
+            <a
+              href={LINKEDIN_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="link-fill"
             >
-              <span className="relative text-white z-10 hover:text-black p-3">Submit</span>
-              <span className="absolute left-0 bottom-0 w-full bg-white transition-all duration-300 h-0.5 rounded group-hover:h-[23px]  group-hover:z-0 z-[-1]"></span>
+              find me on LinkedIn
+            </a>{' '}
+            or{' '}
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="link-fill"
+            >
+              GitHub
+            </a>
+            .
+          </p>
+          <div className="mt-10">
+            <Portrait />
+          </div>
+        </div>
+
+        <form
+          ref={form}
+          onSubmit={sendEmail}
+          onInput={clearStatus}
+          noValidate
+          className="self-start rounded-2xl border border-neutral-200 bg-neutral-100/70 p-5 shadow-sm sm:p-8 lg:col-span-7 dark:border-neutral-800 dark:bg-neutral-900/60"
+        >
+          <input type="hidden" name="time" />
+          <fieldset disabled={status === 'sending'} className="grid gap-5 sm:grid-cols-2">
+            <legend className="sr-only">Send a message</legend>
+            <Field
+              id="contact-name"
+              name="user_name"
+              label="Your name"
+              hint="Enter your name."
+              autoComplete="name"
+              required
+            />
+            <Field
+              id="contact-email"
+              name="user_email"
+              type="email"
+              label="Email"
+              hint="Enter an email address, like name@example.com."
+              autoComplete="email"
+              required
+            />
+            <Field
+              id="contact-subject"
+              name="title"
+              label="Subject"
+              hint="Add a subject."
+              required
+              className="sm:col-span-2"
+            />
+            <Field
+              id="contact-message"
+              name="message"
+              label="Message"
+              hint="Write a message."
+              multiline
+              rows={6}
+              required
+              className="sm:col-span-2"
+            />
+          </fieldset>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <button
+              type="submit"
+              aria-disabled={status === 'sending'}
+              className="sunset-fill inline-flex cursor-pointer items-center gap-2 rounded-xl px-6 py-3.5 text-lg font-semibold text-neutral-950 shadow-sm transition-[filter,transform] duration-150 hover:brightness-105 focus-visible:outline-neutral-900 active:scale-[0.98] aria-disabled:cursor-wait aria-disabled:opacity-70 dark:focus-visible:outline-neutral-100"
+            >
+              {status === 'sending' ? 'Sending…' : 'Send message'}
+              <svg viewBox="0 0 20 20" aria-hidden="true" className="size-5 fill-current">
+                <path d="M2.6 2.3a.75.75 0 0 1 .82-.1l14 7a.75.75 0 0 1 0 1.34l-14 7a.75.75 0 0 1-1.04-.9L4.5 10 2.38 3.36a.75.75 0 0 1 .22-1.06ZM5.9 10.75l-1.5 4.7L14.7 10 4.4 4.55l1.5 4.7h4.35a.75.75 0 0 1 0 1.5H5.9Z" />
+              </svg>
             </button>
+            <p role="status" className="flex items-center gap-2 text-lg">
+              {status === 'sent' && (
+                <>
+                  <span aria-hidden="true" className="grid size-6 place-items-center rounded-full bg-emerald-600 text-sm text-white">
+                    ✓
+                  </span>
+                  Message sent. I&rsquo;ll reply by email.
+                </>
+              )}
+              {status === 'failed' && (
+                <span className="text-rose-700 dark:text-rose-400">
+                  Message not sent. Check your connection and send it again.
+                </span>
+              )}
+            </p>
           </div>
         </form>
-        {status && (
-          <p className={`text-center text-sm ${status.includes('Error') ? 'text-red-600' : 'text-green-600'}`}>
-            {status}
-          </p>
-        )}
       </div>
-    </div>
+    </section>
   );
 }
 
