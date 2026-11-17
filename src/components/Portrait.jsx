@@ -1,102 +1,60 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion, useInView, useReducedMotion } from 'motion/react';
-import { AsciiArt } from '@/components/ui/ascii-art';
-import { useTheme } from '@/lib/theme';
-import portrait from '../assets/ajay-contact.webp';
-// The same photo on white, for the ASCII pass: its ramp reads white as empty.
-import asciiSource from '../assets/ajay-contact-ascii.jpg';
+import { PixelatedCanvas } from '@/components/ui/pixelated-canvas';
+// The same cut-out as the first page, shown here only as dots.
+import portrait from '../assets/ajay-home.webp';
 
-// Named so the lint rule for unused imports can see them used in JSX.
-const MotionImage = motion.img;
-const MotionScan = motion.span;
-const MotionLayer = motion.div;
+// Named so the lint rule for unused imports can see it used in JSX.
+const MotionFrame = motion.div;
 
-const ASCII_HOLD_MS = 2200; // how long the ASCII version shows before the photo
-const REVEAL = { duration: 1.4, ease: [0.65, 0, 0.35, 1] };
+const WIDTH = 300;
+const HEIGHT = 362; // the photo's 1142 × 1377 at WIDTH
 
-// Shaped like the photo (640 × 773), so the ASCII grid, drawn with "fill",
-// keeps the figure's proportions.
-const frameClass =
-  'relative aspect-[640/773] w-full max-w-[17rem] overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 shadow-lg dark:border-neutral-800 dark:bg-neutral-900';
-
-// The portrait draws itself in ASCII when it scrolls into view, then the real
-// photo wipes in over it from top to bottom, led by a scan line.
+// The portrait as a field of light dots on a dark card, in both themes, so
+// the grey skin tones of the black-and-white photo stay readable. Pointing
+// at it makes the dots swirl around the pointer; they settle when it leaves.
 function Portrait() {
-  const dark = useTheme() === 'dark';
   const reduceMotion = useReducedMotion();
   const frame = useRef(null);
-  const inView = useInView(frame, { once: true, amount: 0.5 });
-  const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    if (!inView || reduceMotion) return;
-    const timer = setTimeout(() => setRevealed(true), ASCII_HOLD_MS);
-    return () => clearTimeout(timer);
-  }, [inView, reduceMotion]);
-
-  // Reduced motion: no drawing, no wipe, just the photo.
-  if (reduceMotion) {
-    return (
-      <div className={frameClass}>
-        <img
-          src={portrait}
-          alt="Ajay Krishna"
-          width="640"
-          height="773"
-          className="size-full object-cover"
-        />
-      </div>
-    );
-  }
+  const inView = useInView(frame, { once: true, amount: 0.3 });
 
   return (
-    <div ref={frame} className={frameClass}>
-      {/* The photo has no backdrop, so the ASCII layer fades away once the
-          photo has wiped in; otherwise its characters ring the figure. */}
-      <MotionLayer
-        aria-hidden="true"
-        className="absolute inset-0"
-        animate={{ opacity: revealed ? 0 : 1 }}
-        transition={{ duration: 0.6, delay: revealed ? REVEAL.duration : 0 }}
-      >
-        <AsciiArt
-          key={dark ? 'dark' : 'light'}
-          src={asciiSource}
-          resolution={100}
-          inverted
-          objectFit="fill"
-          color={dark ? '#a3a3a3' : '#262626'}
-          animationStyle="fade"
-          animationDuration={1.5}
-          className="size-full"
-        />
-      </MotionLayer>
-
-      <MotionImage
-        src={portrait}
-        alt="Ajay Krishna"
-        width="640"
-        height="773"
-        className="absolute inset-0 size-full object-cover"
-        initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
-        animate={{
-          clipPath: revealed ? 'inset(0% 0% 0% 0%)' : 'inset(0% 0% 100% 0%)',
-        }}
-        transition={REVEAL}
-      />
-
-      <MotionScan
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 h-1 -translate-y-1/2 bg-signal shadow-[0_0_18px_4px_rgba(255,209,0,0.55)]"
-        initial={{ top: '0%', opacity: 0 }}
-        animate={
-          revealed
-            ? { top: '100%', opacity: [0, 1, 1, 0] }
-            : { top: '0%', opacity: 0 }
-        }
-        transition={REVEAL}
-      />
-    </div>
+    <MotionFrame
+      ref={frame}
+      role="img"
+      aria-label="Ajay Krishna"
+      className="relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-lg"
+      style={{ width: WIDTH, height: HEIGHT, maxWidth: '100%' }}
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div aria-hidden="true" className="absolute inset-0">
+        {inView && (
+          <PixelatedCanvas
+            src={portrait}
+            width={WIDTH}
+            height={HEIGHT}
+            cellSize={3}
+            dotScale={0.9}
+            shape="square"
+            backgroundColor=""
+            dropoutStrength={0.15}
+            interactive={!reduceMotion}
+            distortionStrength={3}
+            distortionRadius={80}
+            distortionMode="swirl"
+            followSpeed={0.2}
+            jitterStrength={4}
+            jitterSpeed={4}
+            sampleAverage
+            tintColor="#FFFFFF"
+            tintStrength={0.2}
+            maxFps={30}
+          />
+        )}
+      </div>
+    </MotionFrame>
   );
 }
 
