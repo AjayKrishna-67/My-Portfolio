@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
 import Portrait from './Portrait';
+import { CV_URL, DownloadIcon } from './cv';
 
 export const GITHUB_URL = 'https://github.com/AjayKrishna-67';
 
@@ -115,7 +116,7 @@ function Contact() {
       id="contact"
       className="border-t border-neutral-200 dark:border-neutral-800"
     >
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-12 lg:gap-10 lg:py-32">
+      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-10 lg:py-32">
         <div className="lg:col-span-5">
           <h2 className="display text-5xl sm:text-6xl">Contact</h2>
           <p className="mt-6 max-w-[40ch] text-xl text-neutral-600 dark:text-neutral-400">
@@ -140,9 +141,20 @@ function Contact() {
             </a>
             .
           </p>
-          <div className="mt-10">
-            <Portrait />
-          </div>
+        </div>
+
+        {/* Second row on wide screens, so the form's top lines up with the
+            portrait's. */}
+        <div className="lg:col-span-5 lg:row-start-2">
+          <Portrait />
+          <a
+            href={CV_URL}
+            download="Ajay_Krishna_CV.pdf"
+            className="mt-6 inline-flex items-center gap-2 rounded-md border-2 border-neutral-950 px-5 py-2.5 text-lg font-semibold transition-colors hover:bg-signal dark:border-white dark:hover:text-neutral-950"
+          >
+            <DownloadIcon />
+            Download my CV (PDF)
+          </a>
         </div>
 
         <form
@@ -150,7 +162,7 @@ function Contact() {
           onSubmit={sendEmail}
           onInput={clearStatus}
           noValidate
-          className="self-start rounded-2xl border border-neutral-200 bg-neutral-100/70 p-5 shadow-sm sm:p-8 lg:col-span-7 dark:border-neutral-800 dark:bg-neutral-900/60"
+          className="self-start rounded-2xl border border-neutral-200 bg-neutral-100/70 p-5 shadow-sm sm:p-8 lg:col-span-7 lg:col-start-6 lg:row-start-2 dark:border-neutral-800 dark:bg-neutral-900/60"
         >
           <input type="hidden" name="time" />
           <fieldset disabled={status === 'sending'} className="grid gap-5 sm:grid-cols-2">

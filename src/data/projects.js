@@ -118,12 +118,4 @@ export const earlierProjects = [
       'A service-booking web app with separate user and admin panels in React. Redux-Saga manages the REST API state, and image uploads go through AWS S3 so admins stopped moving files by hand.',
     stack: 'React, Redux-Saga, AWS S3',
   },
-  {
-    title: 'Periyanachi HiTech Solutions',
-    summary:
-      'A static business site deployed through cPanel. EmailJS enquiry forms land in the owner’s inbox, with no back end to host or maintain.',
-    stack: 'HTML, CSS, JavaScript, cPanel, EmailJS',
-    url: 'https://www.periyanachisolutions.com/',
-    domain: 'periyanachisolutions.com',
-  },
 ];

@@ -154,39 +154,49 @@ function Work() {
       </div>
 
       <div className="mx-auto max-w-7xl px-6 pb-24 lg:pt-8 lg:pb-32">
-        <h3 className="display text-2xl sm:text-3xl">Earlier, on my own</h3>
-        <ul className="mt-8 grid gap-x-12 border-t border-neutral-300 md:grid-cols-2 dark:border-neutral-800">
-          {earlierProjects.map((project) => (
-            <li
-              key={project.title}
-              className="border-b border-neutral-300 py-8 md:border-b-0 dark:border-neutral-800"
-            >
-              <h4 className="text-xl font-bold">{project.title}</h4>
-              {project.period && (
-                <p className="mt-1 text-neutral-600 dark:text-neutral-400">{project.period}</p>
-              )}
-              <p className="mt-3 max-w-[52ch] text-lg text-neutral-700 dark:text-neutral-300">
-                {project.summary}
-              </p>
-              <p className="mt-3 text-lg">
-                <span className="text-neutral-600 dark:text-neutral-400">Built with </span>
-                {project.stack}
-              </p>
-              {project.url && (
-                <p className="mt-4 text-lg">
-                  <a
-                    href={project.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="link-fill"
-                  >
-                    Visit {project.domain}
-                  </a>
+        <div className="grid gap-6 border-t border-neutral-300 pt-10 lg:grid-cols-12 lg:gap-10 dark:border-neutral-800">
+          <h3 className="display text-2xl sm:text-3xl lg:col-span-4">Earlier, on my own</h3>
+          <ul className="lg:col-span-8">
+            {earlierProjects.map((project) => (
+              <li
+                key={project.title}
+                className="border-t border-neutral-300 pt-8 first:border-t-0 first:pt-0 [&+li]:mt-8 dark:border-neutral-800"
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+                  <h4 className="text-xl font-bold">{project.title}</h4>
+                  {project.period && (
+                    <p className="text-neutral-600 dark:text-neutral-400">{project.period}</p>
+                  )}
+                </div>
+                <p className="mt-3 max-w-[60ch] text-lg text-neutral-700 dark:text-neutral-300">
+                  {project.summary}
                 </p>
-              )}
-            </li>
-          ))}
-        </ul>
+                <ul aria-label="Built with" className="mt-5 flex flex-wrap gap-2">
+                  {project.stack.split(', ').map((tool) => (
+                    <li
+                      key={tool}
+                      className="rounded-full border border-neutral-300 bg-white px-3 py-1 text-sm font-medium dark:border-neutral-700 dark:bg-neutral-950"
+                    >
+                      {tool}
+                    </li>
+                  ))}
+                </ul>
+                {project.url && (
+                  <p className="mt-5 text-lg">
+                    <a
+                      href={project.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="link-fill"
+                    >
+                      Visit {project.domain}
+                    </a>
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

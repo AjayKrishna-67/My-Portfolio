@@ -5,6 +5,7 @@ import { BuildContext, CURSORS } from '@/lib/build';
 import { HERO_WORD } from '@/lib/intro';
 import { Buildable, CursorSwarm } from './CursorSwarm';
 import photo from '../assets/ajay-home.webp';
+import { CV_URL, DownloadIcon } from './cv';
 
 // Figures straight from the resume.
 const figures = [
@@ -171,12 +172,20 @@ function Hero({ ready }) {
                 storefronts, payments, delivery tracking and the apps around
                 them.
               </Buildable>
-              <Buildable id="actions" className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <Buildable id="actions" className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-4">
                 <a
                   href="#work"
                   className="rounded-md bg-neutral-950 px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-signal hover:text-neutral-950 dark:bg-white dark:text-neutral-950 dark:hover:bg-signal"
                 >
                   See the work
+                </a>
+                <a
+                  href={CV_URL}
+                  download="Ajay_Krishna_CV.pdf"
+                  className="inline-flex items-center gap-2 rounded-md border-2 border-neutral-950 px-5 py-2.5 text-lg font-semibold transition-colors hover:bg-signal dark:border-white dark:hover:text-neutral-950"
+                >
+                  <DownloadIcon />
+                  Download CV
                 </a>
                 <a href="#contact" className="link-fill text-lg">
                   Get in touch
